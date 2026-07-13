@@ -1,0 +1,45 @@
+# Respondly — Cursor Rules
+
+Ovo je portfolio demo projekat (WhatsApp + RAG + HITL + MCP), ne pravi proizvod za real-world klijente. Svaka odluka se donosi kroz prizmu: da li čini demo ubedljivijim i brzim za izgradnju, ili dodaje kompleksnost koju niko neće videti.
+
+## Tech stack
+- Next.js 15 App Router, TypeScript strict, Tailwind CSS, Supabase
+- Server komponente po defaultu, "use client" samo kad je stvarno potrebno
+
+## Shared modules — OBAVEZNO
+Uvek koristiti postojeće module iz /lib pre pisanja nove implementacije:
+- /lib/supabase/server.ts — service_role klijent (webhook, MCP, admin akcije)
+- /lib/supabase/client.ts — browser klijent (login)
+- /lib/claude/client.ts — Anthropic SDK wrapper
+- /lib/auth/require-admin.ts — admin session guard
+- /lib/rag/embed.ts — embedding helper (Faza 2, mora biti isti model u ingestion i query)
+- /lib/whatsapp/send.ts, /lib/whatsapp/verify.ts — WhatsApp send/verify (Faza 1/3)
+
+Nikad lokalno redefinisati Supabase/Claude/embedding poziv unutar pojedinačne rute. Ako modul ne postoji za neku potrebu, dodati ga u /lib, ne pisati inline.
+
+## Naming convention
+snake_case u bazi i u API payload-ima (npr. pending_response_id, whatsapp_number, draft_text).
+camelCase dozvoljen samo u čisto internom TS kodu koji ne dodiruje payload/DB.
+
+## Error handling
+Svaka async operacija ima try/catch. Greške se loguju server-side i vraćaju kao:
+{ error: { code, message } }
+
+## Environment varijable
+NEXT_PUBLIC_ prefiks isključivo za zaista javne vrednosti (Supabase URL, anon key).
+Svi ostali ključevi su server-only i nikad se ne izlažu klijentu.
+
+## Zabranjeno — NE koristiti
+- Redux, Zustand, TanStack Query (component state + server components su dovoljni)
+- Bootstrap, Material UI, Chakra UI, Styled Components, Framer Motion
+- Prisma, NestJS, Express backend, Redis
+- Posebni mikroservisi (uključujući poseban MCP servis)
+- Separate vector database (Pinecone, Weaviate, itd.) — samo Supabase pgvector
+- Auto-send logika bilo koje vrste — svaki odgovor ide kroz HITL approval, bez izuzetka
+- Multi-tenancy ili role sistem — jedan admin, nema organization_id nigde
+
+## HITL pravilo — nikad se ne krši
+Nema puta od primljene WhatsApp poruke do poslate poruke koji ne prolazi kroz eksplicitnu admin akciju (Approve/Edit/Reject). Ovo važi čak i za sensitivity_tag = 'routine'.
+
+## Formatiranje
+Prettier: bez tačka-zareza, jednostruki navodnici, 2-space indent. Pokreni eslint pre commita.
