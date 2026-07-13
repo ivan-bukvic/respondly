@@ -105,6 +105,7 @@ Chunking strategy: split each FAQ markdown file on `##` headings. One chunk per 
 | conversation_id | uuid | FK → conversations |
 | direction | message_direction | enum: `inbound`, `outbound` |
 | body | text | |
+| message_sid | text | nullable; Twilio `MessageSid` for inbound (unique when set) — used for webhook retry idempotency |
 | created_at | timestamptz | |
 
 ### `pending_responses`

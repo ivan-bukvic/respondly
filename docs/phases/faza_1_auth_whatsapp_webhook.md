@@ -76,6 +76,7 @@ Twilio Sandbox zahteva da svaki telefon koji učestvuje pošalje `join <sandbox-
 | conversation_id | uuid | FK → conversations |
 | direction | enum (`inbound`, `outbound`) | |
 | body | text | |
+| message_sid | text | nullable; Twilio `MessageSid` (unique when set) — sprečava duplikate na Twilio retry |
 | created_at | timestamptz | |
 
 Pune definicije ostalih tabela (koje koriste kasnije faze) su u `BACKEND_MASTER.md` §3 — ova faza kreira samo ono što joj je potrebno.
