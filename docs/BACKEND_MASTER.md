@@ -319,6 +319,9 @@ Inside the same Next.js app, as a single API route — not a separate service. T
 | `NO_CHUNKS_RETRIEVED` | RAG retrieval returned nothing above similarity threshold — draft should say "I don't know," not hallucinate |
 | `MCP_TOOL_ERROR` | `book_appointment` insert failed |
 | `INVALID_STATE_TRANSITION` | Attempted transition out of a non-`pending` `pending_responses` row |
+| `GENERATION_FAILED_APPROVE_BLOCKED` | Approve attempted on a row with `generation_failed = true` |
+| `GENERATION_FAILED_REQUIRES_EDIT` | Edit & send attempted with `final_text` identical to the generation-failed placeholder `draft_text` |
+| `RESOLVE_AFTER_SEND_FAILED` | Twilio send succeeded but the atomic `status='pending'` claim returned 0 rows (concurrent transition already claimed) — needs manual review |
 
 Errors are logged server-side; the admin panel surfaces a plain-language message, never a raw stack trace or SQL error (see `FRONTEND_MASTER.md` §8).
 
@@ -330,6 +333,15 @@ Errors are logged server-side; the admin panel surfaces a plain-language message
 - The `pending_responses_inbound_message_id_key` unique constraint has no pre-migration dedup step; if duplicate rows already exist when it's applied, the migration fails until someone manually removes the duplicates first.
 - `scripts/test-pending-idempotency.ts` exercises sequential inserts (insert, then insert again) to prove the 23505 fallback path, not true concurrent inserts via `Promise.all` — it doesn't prove the fix under real request-level concurrency, only that the DB constraint + application-level catch cooperate correctly once a conflict occurs.
 - `insertPendingResponse` (`lib/responses/queries.ts`) and `insertInboundMessage` (`lib/conversations/queries.ts`) both hand-roll the same "insert, catch 23505, re-select and return the existing row" idempotency pattern instead of sharing one helper. Low risk today (two call sites, unlikely to drift silently) but worth extracting if a third idempotent-insert call site appears.
+
+**Known limitations / tech debt from Phase 3 review (not fixed, documented deliberately):**
+- No Twilio idempotency key on outbound send (`lib/whatsapp/send.ts`). Approve/edit claim status atomically *after* a successful send (`UPDATE ... WHERE status = 'pending'`), which guarantees exactly one DB resolution + audit row, but under true concurrent Approve both calls can still physically deliver before either claims. Single-admin demo scale never hits this; closing it properly needs a Twilio idempotency key (or an outbound-message unique key tied to `pending_response_id`).
+- A crash between the atomic status claim and the `interaction_log` insert can leave a resolved `pending_responses` row with no matching audit-log entry — not wrapped in a compensating multi-statement transaction (Supabase JS client has no multi-statement tx helper here).
+- `formatTimestamp` and the patient-label derivation are duplicated in `components/admin/pending-card.tsx` and `components/admin/history-log.tsx` instead of sharing one helper.
+- `app/api/responses/[id]/{approve,edit,reject}/route.ts` each hand-roll identical `requireAdmin`+401, UUID-validation+400, and try/catch+500 boilerplate, differing only in which transition function they call.
+- `createServiceClient()` (`lib/supabase/server.ts`) is reconstructed on every call instead of being memoized, even though it carries zero per-request state — a single Approve request constructs it multiple times across `queries.ts` and `transition.ts`.
+- `listPendingResponsesWithContext` and `listInteractionLogWithContext` independently repeat the fetch-dedupe-batch-`.in()`-zip pattern (the history helper does it twice in sequence) instead of sharing one helper.
+- The `setAll` catch comment on `createSessionClient` ("called from a Server Component — safe to ignore if proxy is refreshing sessions") is stale: `requireAdmin()` is also called from three POST Route Handlers outside `proxy.ts`'s `/admin/:path*` matcher, where cookie writes actually do persist.
 
 ---
 

@@ -110,3 +110,48 @@ export async function insertInboundMessage(
 
   return data as Message
 }
+
+// Inserts an outbound message row after an admin approve/edit send.
+// message_sid is null — Twilio SID from sendWhatsAppMessage is not persisted
+// on the messages row for this demo (inbound MessageSid is enough for retries).
+export async function insertOutboundMessage(
+  conversationId: string,
+  body: string
+): Promise<Message> {
+  const supabase = await createServiceClient()
+
+  const { data, error } = await supabase
+    .from('messages')
+    .insert({
+      conversation_id: conversationId,
+      direction: 'outbound',
+      body,
+      message_sid: null,
+    })
+    .select('*')
+    .single()
+
+  if (error) {
+    throw error
+  }
+
+  return data as Message
+}
+
+export async function getConversationById(
+  conversationId: string
+): Promise<Conversation | null> {
+  const supabase = await createServiceClient()
+
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('*')
+    .eq('id', conversationId)
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  return (data as Conversation | null) ?? null
+}
