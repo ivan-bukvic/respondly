@@ -117,10 +117,11 @@ Chunking strategy: split each FAQ markdown file on `##` headings. One chunk per 
 | id | uuid | PK |
 | conversation_id | uuid | FK → conversations |
 | inbound_message_id | uuid | FK → messages |
-| draft_text | text | AI-generated draft |
+| draft_text | text | AI-generated draft, or a static fallback message when `generation_failed` |
 | final_text | text | nullable — set if edited |
 | sensitivity_tag | sensitivity_tag | enum: `routine`, `sensitive` — display only, see §7 |
 | retrieved_chunk_ids | uuid[] | which `faq_chunks` grounded this draft — useful for the demo/README to show RAG is actually working |
+| generation_failed | boolean | default `false` — true when `draft_text` is the static fallback, not a real AI draft; admin UI must not treat this as one-click-sendable, see §11 |
 | status | pending_status | enum: `pending`, `approved`, `edited_and_sent`, `rejected` |
 | created_at | timestamptz | |
 | resolved_at | timestamptz | nullable |
@@ -207,6 +208,8 @@ The system prompt must instruct Claude to answer **only** from the retrieved chu
 Simplest viable approach for MVP: tag a draft `sensitive` if any retrieved chunk originates from `05-safety-and-contraindications.md` or contains an explicit escalation note (both FAQ docs 03 and 05 already contain sentences like "must be escalated to a licensed provider" — see `Respondly_Project_Spec` FAQ set). This avoids building a separate classifier for something that doesn't change system behavior, only UI framing.
 
 This is listed as an open decision in `PRODUCT_MASTER.md` §11 — the keyword/source-based approach above is the recommended default unless a reason emerges during Phase 3 to do LLM-based classification instead.
+
+**Update (Phase 2 review round 2):** `sensitive` is also set when retrieval finds zero grounding chunks, and on the RAG-failure fallback path (§11 ERROR HANDLING) — not just source-content matches. It now means "give this draft extra scrutiny" more broadly than "this is safety content." The `generation_failed` flag (§11) is the one that specifically means "there is no real draft here" — the admin UI must key off that, not off `sensitivity_tag`, to decide whether one-click Approve is safe.
 
 ---
 
@@ -318,6 +321,15 @@ Inside the same Next.js app, as a single API route — not a separate service. T
 | `INVALID_STATE_TRANSITION` | Attempted transition out of a non-`pending` `pending_responses` row |
 
 Errors are logged server-side; the admin panel surfaces a plain-language message, never a raw stack trace or SQL error (see `FRONTEND_MASTER.md` §8).
+
+**RAG pipeline failure fallback:** if embedding, retrieval, or Claude generation throws, the webhook still inserts a `pending_responses` row (never drops the message from the HITL queue) with a static "please review manually" `draft_text`, `sensitivity_tag = 'sensitive'`, and `generation_failed = true`. Server logs tag which stage failed (`embedding` / `retrieval` / `generation` / `persistence`) instead of one generic message, so an on-call engineer can tell OpenAI, Supabase, and Claude failures apart.
+
+**Known limitations / tech debt carried from Phase 2 into Phase 3 (not fixed, documented deliberately):**
+- `scripts/ingest-faq.ts` inserts the new FAQ corpus before deleting the old one (to avoid a half-wiped corpus on failure), which means a webhook request arriving mid-ingestion can retrieve a mix of stale and fresh chunks for the same heading, and `retrieved_chunk_ids` captured during that window can end up pointing at chunks deleted moments later (no FK on that column). Acceptable at demo scale (ingestion is a rare, manual, low-traffic-overlap operation); would need a `faq_chunks.corpus_version` column or a swap-via-view pattern to close properly.
+- The same script's final cleanup delete passes all previous document IDs in one `.in(...)` filter with no batching — fine at 5 FAQ documents, would need chunking into batches if the corpus grows into the hundreds.
+- The `pending_responses_inbound_message_id_key` unique constraint has no pre-migration dedup step; if duplicate rows already exist when it's applied, the migration fails until someone manually removes the duplicates first.
+- `scripts/test-pending-idempotency.ts` exercises sequential inserts (insert, then insert again) to prove the 23505 fallback path, not true concurrent inserts via `Promise.all` — it doesn't prove the fix under real request-level concurrency, only that the DB constraint + application-level catch cooperate correctly once a conflict occurs.
+- `insertPendingResponse` (`lib/responses/queries.ts`) and `insertInboundMessage` (`lib/conversations/queries.ts`) both hand-roll the same "insert, catch 23505, re-select and return the existing row" idempotency pattern instead of sharing one helper. Low risk today (two call sites, unlikely to drift silently) but worth extracting if a third idempotent-insert call site appears.
 
 ---
 

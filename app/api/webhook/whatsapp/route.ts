@@ -5,6 +5,8 @@ import {
   findOrCreateConversation,
   insertInboundMessage,
 } from '@/lib/conversations/queries'
+import { generateDraftResponse } from '@/lib/rag/generate-draft'
+import { insertPendingResponse } from '@/lib/responses/queries'
 import { stripWhatsAppPrefix } from '@/lib/whatsapp/format'
 import {
   getTwilioWebhookUrl,
@@ -81,7 +83,47 @@ export async function POST(request: NextRequest) {
       whatsappNumber,
       ProfileName
     )
-    await insertInboundMessage(conversation.id, Body, MessageSid)
+    const inboundMessage = await insertInboundMessage(
+      conversation.id,
+      Body,
+      MessageSid
+    )
+
+    // RAG draft generation — always creates a pending row for HITL.
+    // Failures must not fail the webhook (Twilio would retry the same MessageSid),
+    // but a fallback pending row keeps the message in the HITL queue.
+    try {
+      const { draftText, retrievedChunkIds, sensitivityTag } =
+        await generateDraftResponse(Body)
+      await insertPendingResponse({
+        conversationId: conversation.id,
+        inboundMessageId: inboundMessage.id,
+        draftText,
+        retrievedChunkIds,
+        sensitivityTag,
+      })
+    } catch (ragError) {
+      // generate-draft.ts/retrieve.ts/embed.ts tag their own errors with a stage;
+      // an untagged error here can only have come from insertPendingResponse.
+      const stage = (ragError as { stage?: string })?.stage ?? 'persistence'
+      console.error(`RAG pipeline error [${stage}]:`, ragError)
+      try {
+        await insertPendingResponse({
+          conversationId: conversation.id,
+          inboundMessageId: inboundMessage.id,
+          draftText:
+            'Automatic draft generation failed for this message. Please review the original message and reply manually.',
+          retrievedChunkIds: [],
+          sensitivityTag: 'sensitive',
+          generationFailed: true,
+        })
+      } catch (fallbackError) {
+        console.error(
+          'Failed to insert fallback pending_response:',
+          fallbackError
+        )
+      }
+    }
 
     return new Response(null, { status: 200 })
   } catch (error) {
