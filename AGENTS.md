@@ -19,3 +19,14 @@ When /review is triggered:
 - Check folder structure follows project conventions
 - Check naming convention: snake_case in DB and API payloads, camelCase only in internal TS code
 - Report issues by severity: Critical, High, Medium, Low
+
+### Project Context — Required Reading
+
+Before planning any phase implementation, fix, or feature, consult these documents in docs/:
+
+- docs/PROJECT_MEMORY.md — locked architectural decisions and anti-patterns. Do not deviate from these without explicit user confirmation.
+- docs/BACKEND_MASTER.md — database schema, RAG pipeline, WhatsApp integration, HITL flow, MCP tool-calling, auth, error handling, env variables.
+- docs/FRONTEND_MASTER.md — routes, page layout, component requirements, frontend/backend contract.
+- docs/SECURITY.md — public vs protected routes, server-side-only operations, webhook security, RLS conventions.
+
+These are the single source of truth for cross-cutting rules. Phase documents (docs/phases/faza_*.md) implement these rules — they don't replace them. If a phase document and a master document conflict, flag it and ask rather than guessing which one wins.
