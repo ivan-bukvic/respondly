@@ -9,7 +9,8 @@
     "lint": "eslint",
     "ingest:faq": "tsx --env-file=.env.local scripts/ingest-faq.ts",
     "verify:rag-helpers": "tsx scripts/verify-rag-helpers.ts",
-    "smoke:rag": "tsx --env-file=.env.local scripts/smoke-test-rag.ts"
+    "smoke:rag": "tsx --env-file=.env.local scripts/smoke-test-rag.ts",
+    "smoke:booking": "tsx --env-file=.env.local scripts/smoke-booking.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.111.0",

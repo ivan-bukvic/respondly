@@ -1,4 +1,6 @@
 import { generateDraftResponse } from '../lib/rag/generate-draft'
+import { createServiceClient } from '../lib/supabase/server'
+import { getInternalBaseUrl } from '../lib/http/internal-url'
 
 // Smoke-test query-time RAG without WhatsApp.
 // Requires: SQL migration applied + npm run ingest:faq already done.
@@ -45,11 +47,54 @@ const cases: Array<{
   },
 ]
 
+async function resolveSmokeConversationId(): Promise<string> {
+  const supabase = await createServiceClient()
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('id')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+
+  if (error) {
+    throw error
+  }
+
+  if (data?.id) {
+    return data.id as string
+  }
+
+  // FAQ-only smoke runs may have an empty conversations table — create a
+  // disposable row so generateDraftResponse has a valid conversation_id if
+  // Claude unexpectedly calls book_appointment.
+  const { data: created, error: insertError } = await supabase
+    .from('conversations')
+    .insert({
+      whatsapp_number: '+10000000000',
+      display_name: 'smoke-rag',
+    })
+    .select('id')
+    .single()
+
+  if (insertError) {
+    throw insertError
+  }
+
+  return created.id as string
+}
+
 async function main() {
+  const conversationId = await resolveSmokeConversationId()
+  const baseUrl = getInternalBaseUrl()
+
   for (const testCase of cases) {
     console.log(`\n--- ${testCase.name} ---`)
     console.log(`Q: ${testCase.body}`)
-    const result = await generateDraftResponse(testCase.body)
+    const result = await generateDraftResponse({
+      inboundBody: testCase.body,
+      conversationId,
+      baseUrl,
+    })
     console.log(`tag: ${result.sensitivityTag}`)
     console.log(`chunks: ${result.retrievedChunkIds.length}`)
     console.log(`draft: ${result.draftText}`)

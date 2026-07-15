@@ -5,6 +5,7 @@ import {
   findOrCreateConversation,
   insertInboundMessage,
 } from '@/lib/conversations/queries'
+import { getInternalBaseUrl } from '@/lib/http/internal-url'
 import { generateDraftResponse } from '@/lib/rag/generate-draft'
 import { insertPendingResponse } from '@/lib/responses/queries'
 import { stripWhatsAppPrefix } from '@/lib/whatsapp/format'
@@ -93,8 +94,13 @@ export async function POST(request: NextRequest) {
     // Failures must not fail the webhook (Twilio would retry the same MessageSid),
     // but a fallback pending row keeps the message in the HITL queue.
     try {
+      const baseUrl = getInternalBaseUrl(request)
       const { draftText, retrievedChunkIds, sensitivityTag } =
-        await generateDraftResponse(Body)
+        await generateDraftResponse({
+          inboundBody: Body,
+          conversationId: conversation.id,
+          baseUrl,
+        })
       await insertPendingResponse({
         conversationId: conversation.id,
         inboundMessageId: inboundMessage.id,

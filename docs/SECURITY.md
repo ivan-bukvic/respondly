@@ -81,6 +81,8 @@ Respondly nema multi-tenancy, pa RLS politike nisu organizacione — ali i dalje
 | `TWILIO_AUTH_TOKEN` | **Secret** | Server only — koristi se i za autentikaciju outbound poziva i za verifikaciju inbound webhook potpisa (`X-Twilio-Signature`) |
 | `TWILIO_WHATSAPP_NUMBER` | Server only | Sandbox WhatsApp broj (npr. `whatsapp:+14155238886`), koristi se kao `From` na outbound slanju — nije tajna vrednost sama po sebi, ali se ne izlaže klijentu jer nema razloga da bude javna |
 | `EMBEDDING_MODEL_API_KEY` | **Secret** | Server only |
+| `MCP_SHARED_SECRET` | **Secret** | Server only — `x-mcp-secret` header na `/api/mcp` |
+| `APP_BASE_URL` | Server only | Opcioni eksplicitni origin za interne fetch-eve (lokalno/script); na Vercel-u ima prednost request `X-Forwarded-*` / `VERCEL_URL` |
 
 ---
 
@@ -98,8 +100,8 @@ Respondly nema multi-tenancy, pa RLS politike nisu organizacione — ali i dalje
 
 ### MCP endpoint
 
-- `/api/mcp` poziva se od strane Claude orkestracije, ne od proizvoljnih klijenata
-- Ako je endpoint izložen javno (a ne pozvan iz istog servera), dodati minimalnu autentikaciju (shared secret header) da se spreči da neko spolja piše u `appointments` tabelu
+- `/api/mcp` poziva se od strane Claude orkestracije (interni HTTP round-trip iz `generate-draft`), ne od proizvoljnih klijenata
+- Svaki zahtev mora imati header `x-mcp-secret` jednak `MCP_SHARED_SECRET` — odbaciti 401 ako nedostaje ili ne odgovara, da niko spolja ne piše u `appointments`
 
 ---
 

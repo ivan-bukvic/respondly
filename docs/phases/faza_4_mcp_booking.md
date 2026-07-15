@@ -72,14 +72,14 @@ Ovo je razlog zašto MCP postoji u projektu uopšte — vidi `PRODUCT_MASTER.md`
 
 | **#** | **Zadatak** | **Status** |
 |---|---|---|
-| 1 | `appointments` tabela | [ ] |
-| 2 | `book_appointment` tool definicija registrovana u `/lib/claude/client.ts` | [ ] |
-| 3 | `/api/mcp` endpoint | [ ] |
-| 4 | Claude prepoznaje booking nameru i poziva tool (ne hardkodovan if) | [ ] |
-| 5 | Tool rezultat se uklapa u draft odgovor | [ ] |
-| 6 | Booking potvrda i dalje prolazi kroz HITL flow (Faza 3), ne šalje se automatski | [ ] |
-| 7 | Shared-secret zaštita na `/api/mcp` ako je endpoint javno dostupan | [ ] |
-| 8 | Test: poruka "želim termin za [datum]" rezultuje redom u `appointments` | [ ] |
-| 9 | Test: booking potvrda se pojavljuje u Pending Approvals, ne šalje se sama | [ ] |
+| 1 | `appointments` tabela | [x] migration file; apply manually in Supabase SQL Editor |
+| 2 | `book_appointment` tool definicija registrovana u `/lib/claude/client.ts` | [x] |
+| 3 | `/api/mcp` endpoint | [x] |
+| 4 | Claude prepoznaje booking nameru i poziva tool (ne hardkodovan if) | [x] |
+| 5 | Tool rezultat se uklapa u draft odgovor | [x] |
+| 6 | Booking potvrda i dalje prolazi kroz HITL flow (Faza 3), ne šalje se automatski | [x] |
+| 7 | Shared-secret zaštita na `/api/mcp` ako je endpoint javno dostupan | [x] |
+| 8 | Test: poruka "želim termin za [datum]" rezultuje redom u `appointments` | [ ] run `npm run smoke:booking` with `npm run dev` |
+| 9 | Test: booking potvrda se pojavljuje u Pending Approvals, ne šalje se sama | [ ] manual WhatsApp / admin check |
 
 Respondly · Faza 4 · MCP Tool Call (Booking) · Portfolio Project

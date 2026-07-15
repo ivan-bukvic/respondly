@@ -343,6 +343,12 @@ Errors are logged server-side; the admin panel surfaces a plain-language message
 - `listPendingResponsesWithContext` and `listInteractionLogWithContext` independently repeat the fetch-dedupe-batch-`.in()`-zip pattern (the history helper does it twice in sequence) instead of sharing one helper.
 - The `setAll` catch comment on `createSessionClient` ("called from a Server Component — safe to ignore if proxy is refreshing sessions") is stale: `requireAdmin()` is also called from three POST Route Handlers outside `proxy.ts`'s `/admin/:path*` matcher, where cookie writes actually do persist.
 
+**Known limitations / tech debt from Phase 4 review (not fixed, documented deliberately):**
+- `getInternalBaseUrl` (`lib/http/internal-url.ts`) duplicates the `X-Forwarded-Proto` / `X-Forwarded-Host` reconstruction already implemented in `getTwilioWebhookUrl` (`lib/whatsapp/verify.ts`). A future proxy-header fix needs to land in two places; should extract a shared helper (AGENTS.md Shared Foundations reuse).
+- `getAppointmentById` (`lib/appointments/queries.ts`) has zero call sites; kept for a future admin appointment view, not removed during Phase 4.
+- `unique (conversation_id, requested_time)` on `appointments` (review fix #1) spans all statuses, so cancel-then-rebook of the same slot is blocked, and two different `treatment` values at the same `(conversation_id, requested_time)` collapse to one idempotent row.
+- Demo records the patient's stated wall-clock time as UTC (`requested_time` must end in `Z` / an explicit offset; no clinic-timezone conversion). Acceptable at demo scale; a real product would need an explicit clinic IANA timezone.
+
 ---
 
 ## 12. ENVIRONMENT VARIABLES
@@ -357,6 +363,8 @@ Errors are logged server-side; the admin panel surfaces a plain-language message
 | `TWILIO_AUTH_TOKEN` | **Secret** | Server only — used both to authenticate outbound Twilio API calls and to validate the `X-Twilio-Signature` header on inbound webhooks |
 | `TWILIO_WHATSAPP_NUMBER` | Server only (not secret, but not client-exposed either) | The Twilio Sandbox WhatsApp number (e.g. `whatsapp:+14155238886`), used as the `From` value on outbound sends |
 | `EMBEDDING_MODEL_API_KEY` | **Secret** | Server only, if using a separate embedding provider |
+| `MCP_SHARED_SECRET` | **Secret** | Server only — shared secret for `x-mcp-secret` on `/api/mcp` (Phase 4) |
+| `APP_BASE_URL` | Server only | Optional explicit origin for internal fetches (e.g. `http://localhost:3000`); on Vercel, `VERCEL_URL` / request `X-Forwarded-*` reconstruction is preferred |
 
 ---
 
