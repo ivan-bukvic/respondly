@@ -1,6 +1,6 @@
-import { timingSafeEqual } from 'node:crypto'
 import { NextResponse } from 'next/server'
 import { z } from 'zod'
+import { timingSafeEqual } from '@/lib/auth/timing-safe-equal'
 import { insertAppointment } from '@/lib/appointments/queries'
 
 export const runtime = 'nodejs'
@@ -26,12 +26,6 @@ function unauthorized() {
   )
 }
 
-function secretMatches(provided: string, expected: string): boolean {
-  const a = Buffer.from(provided)
-  const b = Buffer.from(expected)
-  return a.length === b.length && timingSafeEqual(a, b)
-}
-
 // Internal MCP tool endpoint. Called by generate-draft when Claude emits
 // a book_appointment tool_use block — not by arbitrary clients.
 // Protected by MCP_SHARED_SECRET (see SECURITY.md §5).
@@ -52,7 +46,7 @@ export async function POST(request: Request) {
     }
 
     const providedSecret = request.headers.get('x-mcp-secret')
-    if (!providedSecret || !secretMatches(providedSecret, expectedSecret)) {
+    if (!providedSecret || !timingSafeEqual(providedSecret, expectedSecret)) {
       return unauthorized()
     }
 

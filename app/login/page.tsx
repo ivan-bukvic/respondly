@@ -51,13 +51,9 @@ export default function LoginPage() {
     <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
       <Card className="w-full max-w-sm">
         <CardHeader className="items-center text-center">
-          <div
-            aria-hidden
-            className="mb-2 flex size-12 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground"
-          >
-            LA
-          </div>
-          <CardTitle className="text-lg">Lumin Aesthetic Clinic</CardTitle>
+          <CardTitle className="text-lg text-primary">
+            Lumin Aesthetic Clinic
+          </CardTitle>
           <CardDescription>Prijavite se na admin panel</CardDescription>
         </CardHeader>
         <CardContent>

@@ -27,8 +27,10 @@ Respondly je jednostavniji sigurnosno od multi-tenant sistema — postoji samo j
 ### Middleware pravila
 
 Next.js middleware (`proxy.ts` u Next.js 16+) mora:
+- Primijeniti basic-auth zavesu na ceo javni URL (env: `BASIC_AUTH_USER` / `BASIC_AUTH_PASSWORD`) — dodatna zaštita preko edge-a; Supabase Auth ostaje prava zaštita za `/admin`
 - Redirectovati neulogovane korisnike sa `/admin` na `/login`
-- Ne primenjivati auth check na `/api/webhook/whatsapp` (Twilio ne šalje Supabase session) — umesto toga, signature verifikacija (§6) je jedina linija odbrane, pa mora biti striktna
+- Ne primenjivati auth check (niti basic-auth) na `/api/webhook/whatsapp` (Twilio ne šalje Supabase session ni Basic header) — umesto toga, signature verifikacija (§5) je jedina linija odbrane, pa mora biti striktna
+- Ne primenjivati basic-auth na `/api/mcp` (server-to-server, štiti se `x-mcp-secret`)
 
 ---
 
@@ -82,6 +84,8 @@ Respondly nema multi-tenancy, pa RLS politike nisu organizacione — ali i dalje
 | `TWILIO_WHATSAPP_NUMBER` | Server only | Sandbox WhatsApp broj (npr. `whatsapp:+14155238886`), koristi se kao `From` na outbound slanju — nije tajna vrednost sama po sebi, ali se ne izlaže klijentu jer nema razloga da bude javna |
 | `EMBEDDING_MODEL_API_KEY` | **Secret** | Server only |
 | `MCP_SHARED_SECRET` | **Secret** | Server only — `x-mcp-secret` header na `/api/mcp` |
+| `BASIC_AUTH_USER` | **Secret** | Server only — basic-auth zavesa u `proxy.ts` (demo URL) |
+| `BASIC_AUTH_PASSWORD` | **Secret** | Server only — basic-auth zavesa u `proxy.ts` (demo URL) |
 | `APP_BASE_URL` | Server only | Opcioni eksplicitni origin za interne fetch-eve (lokalno/script); na Vercel-u ima prednost request `X-Forwarded-*` / `VERCEL_URL` |
 
 ---
@@ -126,7 +130,7 @@ Respondly nema multi-tenancy, pa RLS politike nisu organizacione — ali i dalje
 
 | # | Zadatak | Status |
 |---|---------|--------|
-| 1 | `/admin` zaštićen middleware-om (`proxy.ts`) | [ ] |
+| 1 | `/admin` zaštićen middleware-om (`proxy.ts`) | [x] |
 | 2 | Twilio webhook signature verifikacija (`X-Twilio-Signature`) implementirana i testirana | [ ] |
 | 3 | `SUPABASE_SERVICE_ROLE_KEY` korišćen isključivo server-side | [ ] |
 | 4 | `ANTHROPIC_API_KEY`, `TWILIO_AUTH_TOKEN` server-side only | [ ] |
@@ -135,7 +139,7 @@ Respondly nema multi-tenancy, pa RLS politike nisu organizacione — ali i dalje
 | 7 | Status transition logika (`pending_responses`) je server-side, ne poverena klijentu | [ ] |
 | 8 | `/api/mcp` nije otvoren za proizvoljne pozive bez provere | [ ] |
 | 9 | Nema secret-a u git repozitorijumu (proveri `.env` u `.gitignore`) | [ ] |
-| 10 | Ako je demo URL javan bez logina, basic-auth je postavljen na edge-u | [ ] |
+| 10 | Ako je demo URL javan bez logina, basic-auth je postavljen na edge-u | [x] |
 | 11 | Twilio Sandbox session je aktivna (demo telefon "joined") pre snimanja Loom-a | [ ] |
 
 ---

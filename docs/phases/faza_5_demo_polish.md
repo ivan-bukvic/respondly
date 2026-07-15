@@ -55,13 +55,13 @@ Prolazi se kompletan checklist iz `SECURITY.md` §7 pre nego što se URL deli ja
 
 | **#** | **Zadatak** | **Status** |
 |---|---|---|
-| 1 | Brendiranje (ime, logo, accent boja) primenjeno svuda | [ ] |
+| 1 | Brendiranje (ime, logo, accent boja) primenjeno svuda | [x] |
 | 2 | 3-5 test poruka poslato kroz ceo flow pre snimanja | [ ] |
 | 3 | History log sadrži realistične redove (approve, edit, reject, booking) | [ ] |
 | 4 | Produkcioni Vercel deploy | [ ] |
-| 5 | Basic-auth middleware implementiran na javnom URL-u | [ ] |
+| 5 | Basic-auth middleware implementiran na javnom URL-u | [x] |
 | 6 | Twilio Sandbox webhook URL ažuriran na produkcioni | [ ] |
-| 7 | README napisan (svih 6 sekcija, uključujući WhatsApp provajder napomenu) | [ ] |
+| 7 | README napisan (svih 6 sekcija, uključujući WhatsApp provajder napomenu) | [x] |
 | 8 | `SECURITY.md` checklist kompletno prošao | [ ] |
 | 9 | Twilio Sandbox sesija potvrđena aktivna neposredno pre Loom snimanja | [ ] |
 
