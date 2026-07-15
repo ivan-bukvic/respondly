@@ -5,6 +5,11 @@ import { LogoutButton } from './logout-button'
 import { listPendingResponsesWithContext } from '@/lib/responses/queries'
 import { listInteractionLogWithContext } from '@/lib/responses/transition'
 
+// createServiceClient() never touches cookies/headers, so without this
+// Next.js statically prerenders /admin at build time and serves stale rows.
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminPage() {
   const [pending, history] = await Promise.all([
     listPendingResponsesWithContext(),
