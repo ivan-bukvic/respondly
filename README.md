@@ -4,7 +4,7 @@ Portfolio demo: WhatsApp clinic assistant with RAG, human-in-the-loop approval, 
 
 Brand stand-in: **Lumin Aesthetic Clinic**. Every outbound reply must pass an explicit admin Approve / Edit / Reject action before it reaches the patient.
 
-## Arhitektura
+## Architecture
 
 ```text
 Patient WhatsApp
@@ -32,7 +32,7 @@ Twilio WhatsApp Sandbox ──POST──► /api/webhook/whatsapp
 
 Inbound Twilio message → embed + retrieve FAQ chunks → Claude generates a draft (and may call `book_appointment` via an internal MCP HTTP round-trip) → draft lands in `pending_responses` → admin reviews → only after Approve/Edit is a message sent outbound.
 
-## Kako pokrenuti lokalno
+## How to Run Locally
 
 1. Copy env vars into `.env.local` (see list below).
 2. `npm install`
@@ -59,20 +59,20 @@ Inbound Twilio message → embed + retrieve FAQ chunks → Claude generates a dr
 
 For local Twilio testing, point the Sandbox webhook at your tunnel URL (e.g. ngrok) + `/api/webhook/whatsapp`.
 
-## Poznata ograničenja
+## Known Limitations
 
 - **Booking is written before HITL confirmation.** `book_appointment` inserts into `appointments` when Claude calls the tool during draft generation; the patient is notified only after admin Approve/Edit. The booking row can therefore exist even if the admin later Rejects the draft.
 - **No realtime.** Admin UI does not subscribe to live updates — use the Refresh button.
 - **Twilio Sandbox requires `join <code>`** from the demo phone before each demo session, and the sandbox session expires after ~3 days of inactivity.
 - Single admin, no multi-tenancy, no auto-send — every outbound path goes through explicit HITL.
 
-## WhatsApp provajder — napomena o odluci
+## WhatsApp Provider — Decision Note
 
 The project originally targeted the Meta WhatsApp Cloud API sandbox. During setup, Meta developer-account verification stayed persistently stuck (a known platform issue at the time — not specific to this codebase), which blocked registration. Twilio WhatsApp Sandbox was adopted instead: no business verification for sandbox use, simpler webhook model (no GET handshake), and a real WhatsApp number rather than a mocked chat UI.
 
 The demonstrated patterns — RAG, HITL approval, MCP tool-calling — are **provider-agnostic**. Twilio vs Meta is a swappable implementation detail; a real engagement can use whichever WhatsApp Business channel the client prefers.
 
-## Šta bi se promenilo za pravog klijenta
+## What Would Change for a Real Client
 
 - Multi-tenant schema (`organization_id`, per-clinic FAQ corpora and auth)
 - Production WhatsApp Business sender (Meta Cloud API or Twilio production), not Sandbox
