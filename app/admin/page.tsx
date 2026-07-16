@@ -21,7 +21,7 @@ export default async function AdminPage() {
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
           <div>
-            <p className="font-display text-sm uppercase italic tracking-wide text-primary">
+            <p className="font-display text-3xl italic leading-tight text-primary sm:text-4xl">
               Lumin Aesthetic Clinic
             </p>
             <h1 className="text-xl font-semibold tracking-tight">
