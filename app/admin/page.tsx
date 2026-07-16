@@ -17,11 +17,11 @@ export default async function AdminPage() {
   ])
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-background">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
           <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            <p className="font-display text-sm uppercase italic tracking-wide text-primary">
               Lumin Aesthetic Clinic
             </p>
             <h1 className="text-xl font-semibold tracking-tight">
@@ -38,7 +38,7 @@ export default async function AdminPage() {
       <main className="mx-auto grid max-w-6xl gap-8 px-4 py-8 md:grid-cols-2">
         <section className="flex flex-col gap-3">
           <div>
-            <h2 className="text-lg font-medium">Pending Approvals</h2>
+            <h2 className="font-display text-xl italic">Pending Approvals</h2>
             <p className="text-sm text-muted-foreground">
               Review AI drafts before anything reaches the patient.
             </p>
@@ -48,7 +48,7 @@ export default async function AdminPage() {
 
         <section className="flex flex-col gap-3">
           <div>
-            <h2 className="text-lg font-medium">History Log</h2>
+            <h2 className="font-display text-xl italic">History Log</h2>
             <p className="text-sm text-muted-foreground">
               Recent approve, edit, and reject actions.
             </p>

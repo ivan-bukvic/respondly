@@ -24,7 +24,7 @@ function formatTimestamp(iso: string): string {
 export function HistoryLog({ items }: HistoryLogProps) {
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border px-4 py-10 text-center">
+      <div className="rounded-xl border border-dashed border-border bg-card px-5 py-10 text-center shadow-sm shadow-black/5">
         <p className="font-medium">No activity yet</p>
         <p className="mt-1 text-sm text-muted-foreground">
           Approved, edited, and rejected actions will show up here.
@@ -34,14 +34,14 @@ export function HistoryLog({ items }: HistoryLogProps) {
   }
 
   return (
-    <ul className="divide-y divide-border rounded-xl border border-border">
+    <ul className="divide-y divide-border rounded-xl border border-border bg-card shadow-sm shadow-black/5">
       {items.map((item) => {
         const patientLabel = item.display_name
           ? `${item.display_name} (${item.whatsapp_number})`
           : item.whatsapp_number
 
         return (
-          <li key={item.id} className="px-4 py-3">
+          <li key={item.id} className="px-5 py-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-sm font-medium">
                 {ACTION_LABEL[item.action]}

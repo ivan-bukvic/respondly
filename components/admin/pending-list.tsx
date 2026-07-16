@@ -8,7 +8,7 @@ type PendingListProps = {
 export function PendingList({ items }: PendingListProps) {
   if (items.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-border px-4 py-10 text-center">
+      <div className="rounded-xl border border-dashed border-border bg-card px-5 py-10 text-center shadow-sm shadow-black/5">
         <p className="font-medium">No pending responses</p>
         <p className="mt-1 text-sm text-muted-foreground">
           New WhatsApp messages will appear here for approval.

@@ -148,7 +148,7 @@ export function PendingCard({ item }: PendingCardProps) {
   }
 
   return (
-    <Card>
+    <Card className="shadow-sm shadow-black/5 [--card-spacing:--spacing(5)]">
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>

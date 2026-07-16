@@ -48,10 +48,10 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Card className="w-full max-w-sm">
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <Card className="w-full max-w-sm shadow-sm shadow-black/5 [--card-spacing:--spacing(5)]">
         <CardHeader className="items-center text-center">
-          <CardTitle className="text-lg text-primary">
+          <CardTitle className="font-display text-2xl italic text-primary">
             Lumin Aesthetic Clinic
           </CardTitle>
           <CardDescription>Prijavite se na admin panel</CardDescription>
