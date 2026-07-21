@@ -148,7 +148,15 @@ export function PendingCard({ item }: PendingCardProps) {
   }
 
   return (
-    <Card className="shadow-sm shadow-black/5 [--card-spacing:--spacing(5)]">
+    <Card className="relative rounded-2xl shadow-[0_6px_20px_-12px_oklch(0.145_0_0/0.12)] [--card-spacing:--spacing(5)]">
+      <div
+        aria-hidden
+        className={`absolute inset-y-0 left-0 w-1 ${
+          item.sensitivity_tag === 'sensitive'
+            ? 'bg-amber-500'
+            : 'bg-primary'
+        }`}
+      />
       <CardHeader>
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div>
@@ -157,6 +165,7 @@ export function PendingCard({ item }: PendingCardProps) {
           </div>
           <div className="flex flex-wrap gap-1.5">
             <Badge
+              className="rounded-full px-2.5"
               variant={
                 item.sensitivity_tag === 'sensitive' ? 'warning' : 'secondary'
               }
@@ -164,20 +173,22 @@ export function PendingCard({ item }: PendingCardProps) {
               {item.sensitivity_tag}
             </Badge>
             {item.generation_failed ? (
-              <Badge variant="destructive">generation failed</Badge>
+              <Badge className="rounded-full px-2.5" variant="destructive">
+                generation failed
+              </Badge>
             ) : null}
           </div>
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">
         <div>
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary/70">
             Inbound
           </p>
           <p className="whitespace-pre-wrap text-sm">{item.inbound_body}</p>
         </div>
         <div>
-          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          <p className="mb-1 text-xs font-medium uppercase tracking-wide text-primary/70">
             AI draft
           </p>
           {item.generation_failed ? (
@@ -194,7 +205,9 @@ export function PendingCard({ item }: PendingCardProps) {
               onSave={handleEditSave}
             />
           ) : (
-            <p className="whitespace-pre-wrap text-sm">{item.draft_text}</p>
+            <p className="whitespace-pre-wrap rounded-lg bg-primary/[0.07] px-3 py-2 text-sm leading-relaxed">
+              {item.draft_text}
+            </p>
           )}
         </div>
         {error
@@ -220,10 +233,11 @@ export function PendingCard({ item }: PendingCardProps) {
           : null}
       </CardContent>
       {!editing ? (
-        <CardFooter className="gap-2">
+        <CardFooter className="gap-2 border-t-0 bg-transparent pt-0">
           <Button
             type="button"
             size="sm"
+            className="h-[34px] px-[18px]"
             disabled={busy || item.generation_failed}
             onClick={handleApprove}
             title={
@@ -237,7 +251,8 @@ export function PendingCard({ item }: PendingCardProps) {
           <Button
             type="button"
             size="sm"
-            variant="secondary"
+            variant="outline"
+            className="h-[34px] px-[18px]"
             disabled={busy}
             onClick={() => {
               setError(null)
@@ -250,6 +265,7 @@ export function PendingCard({ item }: PendingCardProps) {
             type="button"
             size="sm"
             variant="destructive"
+            className="h-[34px] px-[18px]"
             disabled={busy}
             onClick={handleReject}
           >

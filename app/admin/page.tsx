@@ -19,12 +19,12 @@ export default async function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-background">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-[22px]">
           <div>
-            <p className="font-display text-3xl italic leading-tight text-primary sm:text-4xl">
+            <p className="font-display text-2xl font-medium italic leading-tight text-primary">
               Lumin Aesthetic Clinic
             </p>
-            <h1 className="text-xl font-semibold tracking-tight">
+            <h1 className="mt-0.5 text-sm font-semibold tracking-tight">
               Admin Dashboard
             </h1>
           </div>
@@ -35,8 +35,8 @@ export default async function AdminPage() {
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-8 px-4 py-8 md:grid-cols-2">
-        <section className="flex flex-col gap-3">
+      <main className="mx-auto grid max-w-6xl gap-12 px-6 pb-20 pt-10 md:grid-cols-2">
+        <section className="flex flex-col gap-4">
           <div>
             <h2 className="font-display text-xl italic">Pending Approvals</h2>
             <p className="text-sm text-muted-foreground">
@@ -46,7 +46,7 @@ export default async function AdminPage() {
           <PendingList items={pending} />
         </section>
 
-        <section className="flex flex-col gap-3">
+        <section className="flex flex-col gap-4">
           <div>
             <h2 className="font-display text-xl italic">History Log</h2>
             <p className="text-sm text-muted-foreground">

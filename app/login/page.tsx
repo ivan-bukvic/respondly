@@ -34,44 +34,54 @@ export default function LoginPage() {
       })
 
       if (signInError) {
-        setError('Pogrešan email ili lozinka')
+        setError('Invalid email or password')
         return
       }
 
       router.push('/admin')
       router.refresh()
     } catch {
-      setError('Pogrešan email ili lozinka')
+      setError('Invalid email or password')
     } finally {
       setLoading(false)
     }
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm shadow-sm shadow-black/5 [--card-spacing:--spacing(5)]">
-        <CardHeader className="items-center text-center">
-          <CardTitle className="font-display text-2xl italic text-primary">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -right-40 -top-44 size-[30rem] rounded-full bg-[radial-gradient(circle,var(--primary)_0%,transparent_70%)] opacity-15"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-56 -left-44 size-[32.5rem] rounded-full bg-[radial-gradient(circle,var(--primary)_0%,transparent_70%)] opacity-10"
+      />
+      <Card className="relative z-10 w-full max-w-[400px] rounded-2xl shadow-xl shadow-black/10 [--card-spacing:--spacing(8)]">
+        <CardHeader className="items-center gap-2 text-center">
+          <CardTitle className="font-display text-2xl font-medium italic text-primary">
             Lumin Aesthetic Clinic
           </CardTitle>
-          <CardDescription>Prijavite se na admin panel</CardDescription>
+          <CardDescription>Sign in to the admin panel</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            <div className="flex flex-col gap-2">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-[18px]">
+            <div className="flex flex-col gap-1.5">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
                 type="email"
                 autoComplete="email"
+                placeholder="admin@luminaestheticclinic.com"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
+                className="h-11 bg-[oklch(0.99_0.005_70)] px-3.5"
               />
             </div>
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="password">Lozinka</Label>
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -80,6 +90,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={loading}
+                className="h-11 bg-[oklch(0.99_0.005_70)] px-3.5"
               />
             </div>
             {error ? (
@@ -87,8 +98,12 @@ export default function LoginPage() {
                 {error}
               </p>
             ) : null}
-            <Button type="submit" disabled={loading} className="w-full">
-              {loading ? 'Prijavljivanje...' : 'Prijavi se'}
+            <Button
+              type="submit"
+              disabled={loading}
+              className="mt-1.5 h-[46px] w-full text-[15px]"
+            >
+              {loading ? 'Signing in...' : 'Sign in'}
             </Button>
           </form>
         </CardContent>

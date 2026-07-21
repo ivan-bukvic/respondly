@@ -23,7 +23,6 @@ export function RefreshButton() {
     <Button
       type="button"
       variant="outline"
-      size="sm"
       disabled={loading}
       onClick={handleRefresh}
     >

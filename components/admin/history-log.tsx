@@ -10,6 +10,15 @@ const ACTION_LABEL: Record<InteractionLogWithContext['action'], string> = {
   rejected: 'Rejected',
 }
 
+const ACTION_COLOR: Record<
+  InteractionLogWithContext['action'],
+  { dot: string; label: string }
+> = {
+  approved: { dot: 'bg-emerald-500', label: 'text-emerald-600' },
+  edited_and_sent: { dot: 'bg-primary', label: 'text-primary' },
+  rejected: { dot: 'bg-destructive', label: 'text-destructive' },
+}
+
 function formatTimestamp(iso: string): string {
   try {
     return new Intl.DateTimeFormat(undefined, {
@@ -34,30 +43,37 @@ export function HistoryLog({ items }: HistoryLogProps) {
   }
 
   return (
-    <ul className="divide-y divide-border rounded-xl border border-border bg-card shadow-sm shadow-black/5">
+    <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card shadow-[0_6px_20px_-12px_oklch(0.145_0_0/0.12)]">
       {items.map((item) => {
         const patientLabel = item.display_name
           ? `${item.display_name} (${item.whatsapp_number})`
           : item.whatsapp_number
+        const actionColor = ACTION_COLOR[item.action]
 
         return (
-          <li key={item.id} className="px-5 py-4">
-            <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <p className="text-sm font-medium">
-                {ACTION_LABEL[item.action]}
+          <li key={item.id} className="flex gap-3 px-5 py-4">
+            <span
+              aria-hidden
+              className={`mt-1.5 size-2 shrink-0 rounded-full ${actionColor.dot}`}
+            />
+            <div className="min-w-0 flex-1">
+              <div className="flex flex-wrap items-baseline justify-between gap-2">
+                <p className={`text-sm font-semibold ${actionColor.label}`}>
+                  {ACTION_LABEL[item.action]}
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  {formatTimestamp(item.created_at)}
+                </p>
+              </div>
+              <p className="mt-0.5 text-sm text-muted-foreground">
+                {patientLabel}
               </p>
-              <p className="text-xs text-muted-foreground">
-                {formatTimestamp(item.created_at)}
-              </p>
+              {item.message_preview ? (
+                <p className="mt-1 line-clamp-2 text-sm leading-relaxed">
+                  {item.message_preview}
+                </p>
+              ) : null}
             </div>
-            <p className="mt-0.5 text-sm text-muted-foreground">
-              {patientLabel}
-            </p>
-            {item.message_preview ? (
-              <p className="mt-1 line-clamp-2 text-sm">
-                {item.message_preview}
-              </p>
-            ) : null}
           </li>
         )
       })}

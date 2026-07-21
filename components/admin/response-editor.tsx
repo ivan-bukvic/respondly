@@ -42,6 +42,7 @@ export function ResponseEditor({
         disabled={disabled || saving}
         rows={5}
         aria-label="Edited response"
+        className="bg-[oklch(0.99_0.005_70)]"
       />
       <div className="flex flex-wrap gap-2">
         <Button
