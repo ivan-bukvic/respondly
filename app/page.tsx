@@ -106,44 +106,63 @@ export default function HomePage() {
       <main>
         <section
           id="how-it-works"
-          className="mx-auto grid max-w-[1180px] scroll-mt-6 gap-16 px-6 py-20 lg:grid-cols-[0.85fr_1.15fr] lg:pb-[100px]"
+          className="relative isolate flex min-h-[calc(100svh-73px)] scroll-mt-6 items-center overflow-hidden py-24 lg:py-32"
         >
-          <div className="flex flex-col items-start gap-[22px] pt-2">
-            <h1 className="font-display text-5xl font-medium italic leading-[1.05] text-primary sm:text-[56px]">
-              Lumin Aesthetic Clinic
-            </h1>
-            <p className="max-w-[34ch] text-[17px] leading-relaxed text-muted-foreground">
-              WhatsApp patient messages, answered with AI-drafted replies your
-              team reviews before anything goes out. Human-in-the-loop, every
-              time.
-            </p>
-            <Link
-              href="/login"
-              className={cn(
-                buttonVariants({ size: 'lg' }),
-                'mt-1.5 h-auto rounded-[10px] px-[26px] py-3 text-[15px] font-semibold'
-              )}
-            >
-              Admin login
-            </Link>
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 mx-auto hidden w-full max-w-[1180px] grid-cols-[0.85fr_1.15fr] gap-16 px-6 md:grid"
+          >
+            <div className="relative">
+              <img
+                src="/images/hero-planner.jpg"
+                alt=""
+                width={1440}
+                height={900}
+                loading="lazy"
+                decoding="async"
+                className="absolute right-0 top-1/2 h-[85%] w-[85vw] max-w-none -translate-y-1/2 object-cover object-center opacity-20 [-webkit-mask-image:radial-gradient(ellipse_33%_75%_at_67%_center,black_40%,transparent_100%)] [mask-image:radial-gradient(ellipse_33%_75%_at_67%_center,black_40%,transparent_100%)]"
+              />
+            </div>
           </div>
 
-          <ol className="grid gap-5 sm:grid-cols-2">
-            {STEPS.map((step) => (
-              <li
-                key={step.title}
-                className="flex flex-col gap-2.5 rounded-2xl border border-border bg-card px-6 py-7"
+          <div className="relative z-10 mx-auto grid w-full max-w-[1180px] gap-16 px-6 lg:grid-cols-[0.85fr_1.15fr]">
+            <div className="flex flex-col items-start gap-[22px] pt-2">
+              <h1 className="font-display text-5xl font-medium italic leading-[1.05] text-primary sm:text-[56px]">
+                Lumin Aesthetic Clinic
+              </h1>
+              <p className="max-w-[34ch] text-[17px] leading-relaxed text-muted-foreground">
+                WhatsApp patient messages, answered with AI-drafted replies
+                your team reviews before anything goes out. Human-in-the-loop,
+                every time.
+              </p>
+              <Link
+                href="/login"
+                className={cn(
+                  buttonVariants({ size: 'lg' }),
+                  'mt-1.5 h-auto rounded-[10px] px-[26px] py-3 text-[15px] font-semibold'
+                )}
               >
-                <span className="text-[13px] font-semibold tracking-[0.04em] text-primary">
-                  {step.number}
-                </span>
-                <h2 className="text-[17px] font-semibold">{step.title}</h2>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {step.description}
-                </p>
-              </li>
-            ))}
-          </ol>
+                Admin login
+              </Link>
+            </div>
+
+            <ol className="grid gap-5 sm:grid-cols-2">
+              {STEPS.map((step) => (
+                <li
+                  key={step.title}
+                  className="flex flex-col gap-2.5 rounded-2xl border border-border bg-card px-6 py-7"
+                >
+                  <span className="text-[13px] font-semibold tracking-[0.04em] text-primary">
+                    {step.number}
+                  </span>
+                  <h2 className="text-[17px] font-semibold">{step.title}</h2>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {step.description}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </div>
         </section>
 
         <section
