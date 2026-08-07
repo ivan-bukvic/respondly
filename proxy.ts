@@ -55,6 +55,12 @@ function requireBasicAuth(request: NextRequest): NextResponse | null {
 // Next.js 16 renamed middleware → proxy; runtime is nodejs only.
 // Basic-auth gates the whole public URL; Supabase session still protects /admin.
 export async function proxy(request: NextRequest) {
+  // Vercel Cron authenticates via CRON_SECRET in the route handler —
+  // skip Basic-Auth / session so the Bearer token reaches the handler.
+  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
+    return NextResponse.next()
+  }
+
   const basicAuthFailure = requireBasicAuth(request)
   if (basicAuthFailure) {
     return basicAuthFailure
@@ -74,9 +80,9 @@ export async function proxy(request: NextRequest) {
   if (!user) {
     const loginUrl = new URL('/login', request.url)
     const redirectResponse = NextResponse.redirect(loginUrl)
-    client.response.cookies.getAll().forEach((cookie) =>
-      redirectResponse.cookies.set(cookie)
-    )
+    client.response.cookies
+      .getAll()
+      .forEach((cookie) => redirectResponse.cookies.set(cookie))
     return redirectResponse
   }
 

@@ -42,20 +42,23 @@ Inbound Twilio message → embed + retrieve FAQ chunks → Claude generates a dr
 
 ### Environment variables
 
-| Variable | Notes |
-|----------|--------|
-| `NEXT_PUBLIC_SUPABASE_URL` | Public |
-| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public |
-| `SUPABASE_SERVICE_ROLE_KEY` | Server only |
-| `ANTHROPIC_API_KEY` | Server only |
-| `EMBEDDING_MODEL_API_KEY` | Server only |
-| `TWILIO_ACCOUNT_SID` | Server only |
-| `TWILIO_AUTH_TOKEN` | Server only (send + webhook signature) |
-| `TWILIO_WHATSAPP_NUMBER` | e.g. `whatsapp:+14155238886` |
-| `MCP_SHARED_SECRET` | Header `x-mcp-secret` for `/api/mcp` |
-| `BASIC_AUTH_USER` | Demo URL curtain (proxy.ts) |
-| `BASIC_AUTH_PASSWORD` | Demo URL curtain (proxy.ts) |
-| `APP_BASE_URL` | Optional; local/script origin override |
+| Variable                        | Notes                                                                                                  |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_SUPABASE_URL`      | Public                                                                                                 |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public                                                                                                 |
+| `SUPABASE_SERVICE_ROLE_KEY`     | Server only                                                                                            |
+| `ANTHROPIC_API_KEY`             | Server only                                                                                            |
+| `EMBEDDING_MODEL_API_KEY`       | Server only                                                                                            |
+| `TWILIO_ACCOUNT_SID`            | Server only                                                                                            |
+| `TWILIO_AUTH_TOKEN`             | Server only (send + webhook signature)                                                                 |
+| `TWILIO_WHATSAPP_NUMBER`        | e.g. `whatsapp:+14155238886`                                                                           |
+| `MCP_SHARED_SECRET`             | Header `x-mcp-secret` for `/api/mcp`                                                                   |
+| `BASIC_AUTH_USER`               | Demo URL curtain (proxy.ts)                                                                            |
+| `BASIC_AUTH_PASSWORD`           | Demo URL curtain (proxy.ts)                                                                            |
+| `CRON_SECRET`                   | Server only; Vercel Cron Bearer token for `/api/cron/keep-alive` (set in Vercel Environment Variables) |
+| `APP_BASE_URL`                  | Optional; local/script origin override                                                                 |
+
+`CRON_SECRET` powers a daily Vercel Cron (`0 6 * * *`) that runs a trivial read-only Supabase query so the free-plan project does not auto-pause after 7 days of inactivity.
 
 For local Twilio testing, point the Sandbox webhook at your tunnel URL (e.g. ngrok) + `/api/webhook/whatsapp`.
 
