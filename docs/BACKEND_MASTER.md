@@ -161,7 +161,7 @@ Single seeded Supabase Auth user (the admin). No signup flow, no invite flow, no
 3. Next.js middleware (proxy.ts in Next.js 16+) protects /admin — redirects unauthenticated requests to /login
 ```
 
-If the public demo URL needs a lighter gate than full login (see `PRODUCT_MASTER.md` §11), a Vercel/Next.js basic-auth layer sits in front of the whole app in addition to this — this is a deployment-time decision (Phase 5), not a schema decision.
+The public demo URL is intentionally open (no basic-auth curtain — see `PRODUCT_MASTER.md` §11). Supabase Auth remains the only access control on `/admin`.
 
 ---
 

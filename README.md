@@ -38,7 +38,7 @@ Inbound Twilio message → embed + retrieve FAQ chunks → Claude generates a dr
 2. `npm install`
 3. Ingest FAQ corpus: `npm run ingest:faq`
 4. Start the app: `npm run dev`
-5. Open `http://localhost:3000` — browser will prompt for basic-auth, then you log into `/admin` with the Supabase admin user.
+5. Open `http://localhost:3000` — log into `/admin` with the Supabase admin user.
 
 ### Environment variables
 
@@ -53,8 +53,6 @@ Inbound Twilio message → embed + retrieve FAQ chunks → Claude generates a dr
 | `TWILIO_AUTH_TOKEN`             | Server only (send + webhook signature)                                                                 |
 | `TWILIO_WHATSAPP_NUMBER`        | e.g. `whatsapp:+14155238886`                                                                           |
 | `MCP_SHARED_SECRET`             | Header `x-mcp-secret` for `/api/mcp`                                                                   |
-| `BASIC_AUTH_USER`               | Demo URL curtain (proxy.ts)                                                                            |
-| `BASIC_AUTH_PASSWORD`           | Demo URL curtain (proxy.ts)                                                                            |
 | `CRON_SECRET`                   | Server only; Vercel Cron Bearer token for `/api/cron/keep-alive` (set in Vercel Environment Variables) |
 | `APP_BASE_URL`                  | Optional; local/script origin override                                                                 |
 

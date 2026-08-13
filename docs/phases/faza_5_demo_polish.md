@@ -30,7 +30,7 @@ Cilj nije originalan dizajn sistem — cilj je da ništa ne izgleda kao neizmenj
 | **Korak** | **Detalji** |
 |---|---|
 | 1 | Produkcioni Vercel deploy (razlika od Faze 1 preview-a: stabilan, javni URL) |
-| 2 | Basic-auth middleware postavljen ispred cele aplikacije (odluka iz `PRODUCT_MASTER.md` §11 — Supabase Auth ostaje prava zaštita za `/admin`, basic-auth je dodatna "zavesa" za ceo javni URL) |
+| 2 | ~~Basic-auth middleware~~ — uklonjen; javni demo URL je namerno otvoren (revidirana odluka iz `PRODUCT_MASTER.md` §11). Supabase Auth ostaje prava zaštita za `/admin` |
 | 3 | Environment varijable potvrđene u Vercel production environment-u (ne samo lokalno) — uključujući `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_WHATSAPP_NUMBER` |
 | 4 | Twilio Sandbox webhook URL ažuriran da pokazuje na produkcioni URL (Console → Sandbox Settings → "When a message comes in") |
 
@@ -59,7 +59,7 @@ Prolazi se kompletan checklist iz `SECURITY.md` §7 pre nego što se URL deli ja
 | 2 | 3-5 test poruka poslato kroz ceo flow pre snimanja | [ ] |
 | 3 | History log sadrži realistične redove (approve, edit, reject, booking) | [ ] |
 | 4 | Produkcioni Vercel deploy | [ ] |
-| 5 | Basic-auth middleware implementiran na javnom URL-u | [x] |
+| 5 | ~~Basic-auth middleware na javnom URL-u~~ — uklonjen (javni URL namerno otvoren) | N/A |
 | 6 | Twilio Sandbox webhook URL ažuriran na produkcioni | [ ] |
 | 7 | README napisan (svih 6 sekcija, uključujući WhatsApp provajder napomenu) | [x] |
 | 8 | `SECURITY.md` checklist kompletno prošao | [ ] |

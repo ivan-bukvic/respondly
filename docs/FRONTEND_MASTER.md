@@ -126,7 +126,7 @@ Next.js middleware redirects any unauthenticated request to `/admin` back to `/l
 
 ### Purpose
 
-Gate the admin panel. Given single-admin scope, this can be Supabase Auth email/password for one seeded user, or basic-auth at the edge — see `PRODUCT_MASTER.md` §11 (open question).
+Gate the admin panel with Supabase Auth email/password for one seeded user (`proxy.ts` redirects unauthenticated `/admin` traffic to `/login`). Public demo URL has no basic-auth curtain — see `PRODUCT_MASTER.md` §11.
 
 ### Must contain
 

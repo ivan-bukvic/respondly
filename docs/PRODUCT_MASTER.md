@@ -152,7 +152,7 @@ Full phase breakdown with exit criteria: see `EXECUTION_PHASES.md`.
 |---|---|---|
 | 1 | Google Calendar sync for bookings | Stretch goal — Supabase table is the MVP baseline |
 | 2 | Sensitivity classification method (keyword vs. LLM-flagged) | To be decided during Phase 3 build — see `BACKEND_MASTER.md` §6 |
-| 3 | Basic-auth password vs. full login for the public demo URL | Decided — basic-auth middleware in front of the whole app (Phase 5), Supabase Auth remains the real access control on `/admin` |
+| 3 | Basic-auth password vs. full login for the public demo URL | Revised — basic-auth curtain removed; public demo URL is intentionally open for client sharing. Supabase Auth remains the only access control on `/admin` |
 
 ---
 
